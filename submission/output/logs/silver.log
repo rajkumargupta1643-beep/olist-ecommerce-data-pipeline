@@ -1,0 +1,38 @@
+2026-10-20 14:31:35,969 [INFO] orders loaded successfully: 12824 rows
+2026-10-20 14:31:36,053 [INFO] order_items loaded successfully: 15590 rows
+2026-10-20 14:31:36,383 [INFO] customers loaded successfully: 99441 rows
+2026-10-20 14:31:36,502 [INFO] products loaded successfully: 32951 rows
+2026-10-20 14:31:36,525 [INFO] sellers loaded successfully: 3095 rows
+2026-10-20 14:31:36,768 [INFO] payments loaded successfully: 103886 rows
+2026-10-20 14:31:55,181 [INFO] Column names and data types cleaned.
+2026-10-20 14:32:18,469 [INFO] orders: removed 0 duplicate records
+2026-10-20 14:32:18,513 [INFO] order_items: removed 0 duplicate records
+2026-10-20 14:32:18,601 [INFO] customers: removed 0 duplicate records
+2026-10-20 14:32:18,645 [INFO] products: removed 0 duplicate records
+2026-10-20 14:32:18,653 [INFO] sellers: removed 0 duplicate records
+2026-10-20 14:32:18,807 [INFO] payments: removed 0 duplicate records
+2026-10-20 14:32:59,585 [INFO] orders loaded successfully: 12824 rows
+2026-10-20 14:32:59,658 [INFO] order_items loaded successfully: 15590 rows
+2026-10-20 14:32:59,942 [INFO] customers loaded successfully: 99441 rows
+2026-10-20 14:33:00,098 [INFO] products loaded successfully: 32951 rows
+2026-10-20 14:33:00,122 [INFO] sellers loaded successfully: 3095 rows
+2026-10-20 14:33:00,445 [INFO] payments loaded successfully: 103886 rows
+2026-10-20 14:33:00,696 [INFO] Column names and data types cleaned.
+2026-10-20 14:33:00,728 [INFO] orders: removed 0 duplicate records
+2026-10-20 14:33:00,760 [INFO] order_items: removed 0 duplicate records
+2026-10-20 14:33:00,839 [INFO] customers: removed 0 duplicate records
+2026-10-20 14:33:00,877 [INFO] products: removed 0 duplicate records
+2026-10-20 14:33:00,886 [INFO] sellers: removed 0 duplicate records
+2026-10-20 14:33:01,055 [INFO] payments: removed 0 duplicate records
+2026-10-20 14:34:02,516 [INFO] orders: valid=12824, invalid=0
+2026-10-20 14:34:02,520 [INFO] order_items: valid=14341, invalid=1249
+2026-10-20 14:34:02,523 [INFO] customers: valid=99441, invalid=0
+2026-10-20 14:34:02,526 [INFO] products: valid=32951, invalid=0
+2026-10-20 14:34:02,529 [INFO] sellers: valid=3095, invalid=0
+2026-10-20 14:34:02,533 [INFO] payments: valid=13225, invalid=90661
+2026-10-20 14:34:20,611 [INFO] orders saved: 12824 rows
+2026-10-20 14:34:21,171 [INFO] order_items saved: 15590 rows
+2026-10-20 14:34:23,550 [INFO] customers saved: 99441 rows
+2026-10-20 14:34:24,641 [INFO] products saved: 32951 rows
+2026-10-20 14:34:24,782 [INFO] sellers saved: 3095 rows
+2026-10-20 14:34:27,351 [INFO] payments saved: 103886 rows

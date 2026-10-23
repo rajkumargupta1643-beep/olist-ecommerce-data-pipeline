@@ -1,241 +1,77 @@
-# The Blue Owls Solutions — Azure Data Engineer Take-Home Assessment
+# Olist E-Commerce Data Pipeline
 
-| | |
+A medallion pipeline (Bronze -> Silver -> Gold) built in Jupyter / PySpark on top of the Blue Owls mock data API. It produces a star schema (1 fact + 3 dimensions) and two Spark SQL analyses.
+
+## How to run
+
+1. `docker-compose up` (starts the mock API and Jupyter Lab).
+2. Open http://localhost:8888 and run the notebooks in `work/` in this order:
+
+| Notebook | Purpose |
 |---|---|
-| **Tech Stack** | Python, PySpark, SQL, Jupyter Lab |
-| **Deliverable** | Public GitHub repository |
-| **Data Source** | Blue Owls Data API (credentials provided separately) |
-| **Expected Time** | 8-12 hours |
+| `01_explore` | Look at API schemas and one sample page (exploration only) |
+| `02_ingestion` | API -> Bronze CSVs (auth, retries, validation, manifest) |
+| `03_silver` | Bronze -> Silver (typing, dedupe/upsert, validity flags) |
+| `04_gold` | Silver -> Gold star schema + validation checks |
+| `05_sql_analysis` | Query 1 (revenue trend), saved to `sql/query_1.sql` |
+| `06_sql_query2` | Query 2 (seller scorecard), saved to `sql/query_2.sql` |
 
----
+Outputs are in `submission/output/{bronze,silver,gold}`, quarantined records in `output/quarantine`, logs in `output/logs`. Bronze is append-only, so the committed `output/manifest.json` must stay together with the committed Bronze files. If you want a completely fresh run, delete the whole `output/` folder first.
 
-> **Before you begin:** Read [GETTING_STARTED.md](GETTING_STARTED.md) for environment setup instructions.
+`mock-api/` (including its `data/` folder) comes with the assessment template and is what serves the API. It is not the pipeline's own data: the pipeline only reads from the API.
 
----
+## Part 1: Resilience
 
-## Overview
+The API injects 500s, 429s and token expiry, so all HTTP calls go through one `ApiClient`:
 
-You are a data engineer joining a retail analytics team at Blue Owls Solutions. A partner company has exposed their e-commerce data through a set of internal APIs. Your job is to build a data pipeline that ingests this data, transforms it through a medallion architecture, and produces a star schema for analytics.
+- **401**: log in again and retry the same request (tokens last 15 minutes).
+- **429**: wait for the `Retry-After` header plus a random jitter.
+- **500 / network error / timeout / invalid JSON**: exponential backoff (1s, 2s, 4s ... capped at 30s) plus jitter, up to 8 attempts.
+- **Other 4xx**: fail immediately. These are bugs in our request, so retrying would only waste time.
+- If a page still fails after all retries, it is logged and skipped. It is not written to the manifest, so the next run retries it. After 3 failed pages in a row the endpoint stops, to avoid hammering an API that is probably down. One endpoint failing never stops the others.
+- **Validation**: every record is checked (is an object, expected columns present, key fields not empty, no nested values). Bad records go to `quarantine/<endpoint>_quarantine.jsonl` with the reason and page number. Nothing is dropped silently. In my run 0 records were quarantined, so that path was written but not exercised by real bad data.
 
-The underlying data is based on the Olist Brazilian E-Commerce dataset and is served through our data API. The API is intentionally imperfect — it simulates real-world conditions including intermittent failures, authentication challenges, and occasional data quality issues.
+**Decision I thought about: how to make Bronze idempotent.** Options were (a) check existing Bronze rows before writing, or (b) a manifest of finished pages. I chose the manifest: the key is `endpoint | date_from | page_size | page`, and it is written only after the page is safely appended to the CSV (atomic write via temp file + rename). A re-run skips finished pages without calling the API at all. Option (a) would re-download everything and re-read the growing CSV each time. The trade-off: if the notebook crashes between the CSV write and the manifest write, that page is fetched again and duplicated in Bronze. That gives at-least-once delivery, never data loss, and Silver removes such duplicates (see below). I tested it: the first run fetched 3 / 4 / 20 / 7 / 1 / 21 pages (orders, order_items, customers, products, sellers, payments); a second run fetched 0 pages, skipped all of them and wrote 0 rows.
 
-We are not looking for perfection. We are looking for someone who builds resilient systems, thinks clearly about data, and can articulate their decisions. A pipeline that handles failures gracefully and is clearly reasoned is worth more to us than one that is technically complete but brittle or opaque.
+## Part 3: Silver
 
----
+- Everything is read as text first (no schema guessing, so zip codes keep leading zeros), trimmed, and empty strings become NULL.
+- **Upsert**: exact duplicate rows are removed, then only the latest `_ingested_at` per natural key is kept (`order_id`, `order_id + order_item_id`, `product_id`, ...). Silver is rebuilt from Bronze on every run with overwrite, so the same Bronze always gives the same Silver.
+- Types: timestamps, `decimal(12,2)` for money, integers. A value that cannot be converted makes the record invalid with the column named in `_invalid_reason`. The raw value is never silently lost.
+- `_is_valid` / `_invalid_reason` rules: missing keys, negative price/freight/payment, delivery before purchase, item with no matching order, payment with no matching order.
+- NULL strategy: missing delivery dates stay NULL (order not delivered yet); missing price/payment makes the record invalid (no invented money); missing category becomes `unknown`; missing weight/dimensions stay NULL (0 would distort volume).
+- Invalid records are kept and flagged, not deleted. Gold only uses valid rows.
 
-## Data Access
+## Part 2/3: Gold
 
-The data is available through the Blue Owls Data API at `{base_url}/api/v1/data`.
+- **Surrogate keys** are `xxhash64(natural key)` masked to 63 bits: deterministic across runs, unlike `row_number()`. They are 64-bit (not 32-bit) integers, and uniqueness is checked in the validation step.
+- **Foreign keys** in the fact table are taken by joining to the dimensions, so an orphan key cannot exist. A fact row without a dimension match would go to quarantine and be counted (this run: 0).
+- **Payment split**: the order's total payment is distributed over its items in proportion to `price`. Rounding to cents can leave the split a few cents off, so the difference is added to the most expensive item. The validation step confirms that every order's split adds up exactly to its payment total.
+- `payment_type` = type of the highest payment row (ties: first alphabetically); `payment_installments` = max over payment rows.
+- `dim_customers`: one row per `customer_unique_id`; city/state/zip from the most recent order (order_id as deterministic tie-breaker).
 
-**Authentication:** All requests require a Bearer token. Obtain one by calling the `/api/v1/auth/token` endpoint with the credentials provided in your welcome email.
+## Assumptions and trade-offs
 
-### Available Endpoints
+- **Date scope**: the API can date-filter only `orders` and `order_items`. Customers, products, sellers and payments are ingested in full and the cutoff (2018-07-01) is applied by joining to in-scope orders: 90,661 of 103,886 payments and 1,249 of 15,590 order items have no in-scope order and are flagged invalid in Silver. The likely cause for the items is that the API filters them on a different date field than the order purchase date (not verified).
+- Because of this scope, `total_orders`, `total_spend` and `first_order_date` in `dim_customers` only include orders from 2018-07-01 onward, not the customer's full history.
+- `days_to_deliver` and `days_delivery_vs_estimate` are calendar-day differences (`datediff`). All timestamps are treated as UTC with no time-zone conversion.
+- Cancelled and unavailable orders are included in revenue, because the assignment does not say to exclude them. An order without payments keeps its items with NULL payment columns.
 
-- `GET /api/v1/data/orders`
-- `GET /api/v1/data/order_items`
-- `GET /api/v1/data/customers`
-- `GET /api/v1/data/products`
-- `GET /api/v1/data/sellers`
-- `GET /api/v1/data/payments`
+## Part 4: SQL
 
-Each endpoint supports pagination via `?page=1&page_size=1000`. Responses are returned as JSON arrays.
+- **Query 1**: ranking is computed over all categories in each month, before narrowing to the top 5 categories. Month-over-month growth is NULL when the previous calendar month is missing (no misleading comparison across a gap). **Limitation in the result:** in the Gold fact table there are 7,092 items in July 2018, 7,248 in August, 1 in September and none in October. With the 2018-07-01 cutoff and the required "at least 10 transactions per category-month" filter, only July and August 2018 qualify. So each of the top 5 categories has at most 2 rows, MoM growth exists only for August, and the 3-month rolling average covers at most 2 months. This follows from the data scope, not from the query logic.
+- **Query 2**: the item-level fact table is first collapsed to one row per (seller, order), so multi-item orders are counted once. Late rate = late orders / delivered orders (an undelivered order cannot be late). Percentiles use `PERCENT_RANK()` with lower-is-better metrics ranked descending. Ties share the lowest rank, so sellers with a 0% late rate get 74.29 on the on-time percentile instead of 100. `CUME_DIST()` would be the alternative if ties should get the upper rank. 141 sellers have 20 or more orders.
+- Both queries were cross-checked against an independent DataFrame / pandas calculation (totals match for Query 1; maximum composite score difference 0.0043 for Query 2, which is only rounding).
 
-The `orders` and `order_items` endpoints also support date filtering via `?date_from=YYYY-MM-DD&date_to=YYYY-MM-DD`.
+## Validation results (this run)
 
-> **📅 Data scope:** Ingest records from **2018-07-01 onward** across all endpoints. Use the `date_from` parameter where supported, and apply the same cutoff when filtering related tables (e.g. payments, customers) by joining on order date.
+Bronze rows: orders 12,824 / order_items 15,590 / customers 99,441 / products 32,951 / sellers 3,095 / payments 103,886 (0 duplicate keys). Gold rows: dim_customers 12,647 / dim_products 32,951 / dim_sellers 3,095 / fact_order_items 14,341. All checks pass: no orphan keys, unique surrogate keys, unique fact grain, payment split reconciles, CSV row counts match.
 
-> **⚠️ Important:** The API is intentionally imperfect. It may return intermittent 500 errors, token expiration responses (401), rate limiting (429), and occasional malformed or incomplete records in the payload. Your pipeline should handle these gracefully.
+## What I would change for production on Azure / Microsoft Fabric
 
----
-
-## Part 1 — Data Ingestion & Resilience (Weight: 30%)
-
-Build an ingestion layer in Python that pulls data from all API endpoints. Your solution should:
-
-- Handle authentication and automatic token refresh on 401 responses
-- Implement retry logic with backoff for 500 and 429 errors
-- Validate response payloads and log or quarantine malformed records
-- Support paginated extraction across all endpoints
-- Be idempotent — running it twice should not produce duplicate data
-
-Save the raw ingested data as your Bronze layer (CSV files in a `bronze/` folder). Add an `_ingested_at` timestamp column and `_source_endpoint` column to each file.
-
-**Data management strategy:** Bronze is append-only — each pipeline run appends new records without overwriting existing data. To prevent duplicates across runs, track which pages or date ranges have already been successfully ingested (e.g. via a simple manifest file or by checking existing records before writing). Re-running the pipeline for the same date range should produce no new rows in Bronze.
-
----
-
-## Part 2 — Prescribed Star Schema (Weight: 10%)
-
-Implement the following star schema as your Gold layer. The model is fully defined below — your job is to build it correctly through your transformation pipeline.
-
-### Fact Table: `fact_order_items`
-
-**Grain:** one row per item sold in an order
-
-| Column | Type | Source / Logic |
-|---|---|---|
-| order_item_sk | integer | Surrogate key |
-| order_id | string | orders |
-| order_item_id | integer | order_items |
-| customer_key | integer | FK → dim_customers |
-| product_key | integer | FK → dim_products |
-| seller_key | integer | FK → dim_sellers |
-| order_date | date | orders (purchase_timestamp) |
-| order_status | string | orders |
-| price | decimal | order_items |
-| freight_value | decimal | order_items |
-| payment_value | decimal | Total payment for the order (from payments), distributed across items proportionally by item `price`. If an order has 3 items priced at $10, $20, $70, they receive 10%, 20%, 70% of the order's total payment_value respectively. |
-| payment_type | string | payments — use the payment type with the highest `payment_value` for the order; if tied, take the first alphabetically |
-| payment_installments | integer | payments — use the maximum installment count across payment rows for the order |
-| days_to_deliver | integer | Calculated: delivered_customer_date − purchase_timestamp. Null if order not yet delivered. |
-| days_delivery_vs_estimate | integer | Calculated: delivered_customer_date − estimated_delivery_date. Positive = late, negative = early. Null if not delivered. |
-| is_late_delivery | boolean | True if days_delivery_vs_estimate > 0. Null if not delivered. |
-
-### Dimension: `dim_customers`
-
-**Grain:** one row per unique customer (deduplicated on customer_unique_id)
-
-| Column | Type | Source / Logic |
-|---|---|---|
-| customer_key | integer | Surrogate key |
-| customer_unique_id | string | customers (deduplicate on this, not customer_id) |
-| customer_city | string | customers — use the city from the customer's most recent order by purchase_timestamp |
-| customer_state | string | customers — use the state from the customer's most recent order |
-| customer_zip_code_prefix | string | customers — use from most recent order |
-| first_order_date | date | Earliest purchase_timestamp across all orders for this customer |
-| total_orders | integer | Count of distinct order_ids |
-| total_spend | decimal | Sum of price + freight_value from order_items, across all orders |
-| is_repeat_customer | boolean | True if total_orders > 1 |
-
-### Dimension: `dim_products`
-
-**Grain:** one row per product
-
-| Column | Type | Source / Logic |
-|---|---|---|
-| product_key | integer | Surrogate key |
-| product_id | string | products |
-| product_category_name | string | products — use "unknown" for null values |
-| product_weight_g | decimal | products |
-| product_volume_cm3 | decimal | Calculated: product_length_cm × product_height_cm × product_width_cm. Null if any dimension is missing. |
-| product_photos_qty | integer | products |
-| product_description_length | integer | products |
-
-### Dimension: `dim_sellers`
-
-**Grain:** one row per seller
-
-| Column | Type | Source / Logic |
-|---|---|---|
-| seller_key | integer | Surrogate key |
-| seller_id | string | sellers |
-| seller_city | string | sellers |
-| seller_state | string | sellers |
-| seller_zip_code_prefix | string | sellers |
-
----
-
-## Part 3 — PySpark Transformation Pipeline (Weight: 30%)
-
-Implement the star schema above through a medallion architecture. Output each layer as CSVs in folders:
-
-```
-output/
-├── bronze/       # Raw ingested data, one CSV per API endpoint
-├── silver/       # Cleaned & typed data, one CSV per source table
-└── gold/         # Star schema tables as defined in Part 2
-```
-
-### Bronze Layer
-
-Save the raw API responses as-is, one CSV per endpoint. Add `_ingested_at` and `_source_endpoint` metadata columns.
-
-### Silver Layer
-
-Clean and standardize each source table individually:
-
-- Handle nulls (document your strategy per field)
-- Cast columns to correct types (dates as dates, decimals as decimals)
-- Remove exact duplicate rows
-- Flag records with data quality issues in a boolean `_is_valid` column. Examples of invalid records: orders where `delivered_customer_date` is before `purchase_timestamp`, negative prices, order items with no matching order_id.
-
-**Data management strategy:** Silver reflects the current state of each record. Implement upsert logic using the natural key of each table (e.g. `order_id` for orders, `product_id` for products) so that re-processing updates existing records rather than creating duplicates. Bronze's append-only approach feeds into Silver's deduplicated current-state view.
-
-### Gold Layer
-
-Build the four tables exactly as specified in Part 2. Requirements:
-
-- All surrogate keys should be deterministic and reproducible across runs (e.g. using a hash of the natural key rather than a sequential row number)
-- All foreign key relationships should be valid — no orphan keys in the fact table
-- Include a brief validation step in your code that prints record counts per table and confirms that all `customer_key`, `product_key`, and `seller_key` values in `fact_order_items` exist in their respective dimension tables
-
----
-
-## Part 4 — SQL Analysis (Weight: 15%)
-
-Write SQL queries against your Gold layer tables. These should be compatible with Spark SQL or T-SQL. For each query, include a brief comment explaining your approach.
-
-### Query 1 — Revenue Trend Analysis with Ranking (Required)
-
-For each product category, calculate monthly revenue (price + freight_value) and rank categories within each month by revenue. Then for the top 5 categories by overall revenue, show their month-over-month revenue growth percentage and a 3-month rolling average of revenue. Only include months where the category had at least 10 transactions.
-
-**Expected output columns:** `product_category_name, year, month, monthly_revenue, monthly_rank, mom_growth_pct, rolling_3m_avg_revenue`
-
-### Query 2 — Seller Performance Scorecard (Stretch)
-
-Build a seller scorecard that ranks sellers on a composite score. For each seller, calculate: late delivery rate (percentage of orders where `is_late_delivery = true`), average `days_delivery_vs_estimate`, total revenue, and order count. Compute a percentile rank for each metric across all sellers — invert the ranking for `late_delivery_rate` and `avg_days_vs_estimate` so that lower values yield higher percentiles. Only include sellers with at least 20 orders. Compute a `composite_score` as a weighted average: on-time delivery percentile (40%), delivery speed percentile (30%), revenue percentile (30%).
-
-**Expected output columns:** `seller_id, seller_state, total_orders, total_revenue, late_delivery_rate, avg_days_vs_estimate, on_time_pctl, speed_pctl, revenue_pctl, composite_score, overall_rank`
-
-> Query 1 is required. Query 2 is a stretch goal — attempt it if time allows, and don't let it crowd out the pipeline work.
-
----
-
-## Part 5 — README & Technical Decisions (Weight: 15%)
-
-Include a brief README (1–2 pages) in your submission covering:
-
-- Your technical decisions and the reasoning behind them
-- How you handled API failures and what your retry/resilience strategy is
-- Assumptions you made and any trade-offs you weighed
-- What you would change or add for a production deployment on Azure or Microsoft Fabric (scheduling, monitoring, CI/CD, security, cost optimisation)
-
-Be specific rather than generic. A concrete explanation of one real decision — and what you considered before making it — is worth more than a list of buzzwords.
-
----
-
-## Submission Guidelines
-
-1. Click **"Use this template"** → **"Create a new repository"** at the top of this page
-2. Set your new repository to **Public** and give it a name (e.g. `blue-owls-de-assessment`)
-3. Do all your work in your repository — commit regularly so we can follow your progress
-4. When you are done, submit us the link to your public repository on this form: https://forms.office.com/r/1NvGCj7hQK
-
-Additional requirements:
-
-- **Your entire pipeline must be implemented in Jupyter notebooks** — see [GETTING_STARTED.md](GETTING_STARTED.md) for environment setup
-- Include a `requirements.txt` for any packages your code depends on beyond what the notebook image provides
-- Notebooks should run end-to-end against the provided API without manual intervention
-- Do not commit the raw dataset files — your pipeline should pull from the API
-
----
-
-## Evaluation Criteria
-
-We assess the following, roughly in order of importance:
-
-| Area | What we look for |
-|---|---|
-| **Resilience & error handling** | Does the pipeline recover from API failures without crashing or producing corrupt data? |
-| **Pipeline correctness** | Does the Gold layer match the prescribed schema with valid data and no orphan keys? |
-| **PySpark code quality** | Is the code modular, readable, and clearly structured across notebooks? |
-| **SQL correctness** | Is Query 1 correct? Does Query 2 demonstrate analytical depth? |
-| **Communication** | Does the README explain real decisions with concrete reasoning? |
-
-**What we don't penalise for:** Not using advanced Spark optimisations (broadcasting, partitioning strategies, caching) — unless you choose to and explain why. Leaving Query 2 incomplete if you've explained your approach.
-
-**What we do penalise for:** Unhandled exceptions that crash the pipeline mid-run. Silent data loss (records dropped with no logging or explanation). A README that lists technologies without explaining decisions.
-
----
-
-*Good luck — we look forward to reviewing your work.*
+- **Storage and format**: write Delta tables in ADLS Gen2 / OneLake instead of CSV. The Silver upsert becomes a real Delta `MERGE` on the natural key, and Bronze keeps its append-only history.
+- **Scheduling**: Fabric Data Factory (or Azure Data Factory) pipeline with a daily trigger, running the notebooks in order with parameters. Incremental loads use a watermark (last ingested date) instead of the whole range.
+- **Secrets and security**: the API credentials move into Azure Key Vault, accessed through a managed identity. Nothing is stored in code or environment files. Storage is private (private endpoints, RBAC).
+- **Monitoring**: structured logs go to Log Analytics. Alerts fire on failed pages, a rising quarantine count, or row counts dropping versus the previous run. The validation cell becomes automated data-quality checks that fail the pipeline.
+- **CI/CD**: GitHub Actions runs unit tests for the retry and validation logic against the mock API, then deploys notebooks to dev, then prod.
+- **Cost**: Spark pools auto-pause, with a small node size for this data volume. Only new partitions are processed, and Gold is stored partitioned by `order_date`.

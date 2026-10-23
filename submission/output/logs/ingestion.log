@@ -1,0 +1,126 @@
+13:56:44 [INFO] ===== orders shuru =====
+13:56:44 [INFO] Login OK, naya token mila
+13:56:45 [INFO] orders page 1: 5000 rows OK
+13:56:45 [INFO] orders page 2: 5000 rows OK
+13:56:45 [INFO] orders page 3: 2824 rows OK
+13:56:45 [INFO] ===== order_items shuru =====
+13:56:45 [INFO] order_items page 1: 5000 rows OK
+13:56:46 [INFO] order_items page 2: 5000 rows OK
+13:56:46 [INFO] order_items page 3: 5000 rows OK
+13:56:46 [INFO] order_items page 4: 590 rows OK
+13:56:46 [INFO] ===== customers shuru =====
+13:56:46 [WARNING] 429 rate limit; 2.7s wait, attempt 1/8
+13:56:49 [INFO] customers page 1: 5000 rows OK
+13:56:49 [INFO] customers page 2: 5000 rows OK
+13:56:49 [INFO] customers page 3: 5000 rows OK
+13:56:49 [INFO] customers page 4: 5000 rows OK
+13:56:49 [WARNING] 500 server error; 1.9s wait, attempt 1/8
+13:56:51 [INFO] customers page 5: 5000 rows OK
+13:56:51 [INFO] customers page 6: 5000 rows OK
+13:56:52 [INFO] customers page 7: 5000 rows OK
+13:56:52 [INFO] customers page 8: 5000 rows OK
+13:56:52 [WARNING] 429 rate limit; 2.5s wait, attempt 1/8
+13:56:54 [INFO] customers page 9: 5000 rows OK
+13:56:55 [INFO] customers page 10: 5000 rows OK
+13:56:55 [WARNING] 500 server error; 1.9s wait, attempt 1/8
+13:56:57 [INFO] customers page 11: 5000 rows OK
+13:56:57 [INFO] customers page 12: 5000 rows OK
+13:56:57 [WARNING] 500 server error; 1.2s wait, attempt 1/8
+13:56:58 [INFO] customers page 13: 5000 rows OK
+13:56:58 [INFO] customers page 14: 5000 rows OK
+13:56:58 [WARNING] 500 server error; 1.1s wait, attempt 1/8
+13:57:00 [WARNING] 429 rate limit; 2.4s wait, attempt 2/8
+13:57:02 [INFO] customers page 15: 5000 rows OK
+13:57:02 [INFO] customers page 16: 5000 rows OK
+13:57:02 [WARNING] 500 server error; 1.4s wait, attempt 1/8
+13:57:04 [INFO] customers page 17: 5000 rows OK
+13:57:04 [INFO] customers page 18: 5000 rows OK
+13:57:04 [INFO] customers page 19: 5000 rows OK
+13:57:04 [INFO] customers page 20: 4441 rows OK
+13:57:04 [INFO] ===== products shuru =====
+13:57:05 [INFO] products page 1: 5000 rows OK
+13:57:05 [INFO] products page 2: 5000 rows OK
+13:57:05 [WARNING] 429 rate limit; 3.0s wait, attempt 1/8
+13:57:08 [INFO] products page 3: 5000 rows OK
+13:57:08 [INFO] products page 4: 5000 rows OK
+13:57:08 [INFO] products page 5: 5000 rows OK
+13:57:08 [INFO] products page 6: 5000 rows OK
+13:57:09 [INFO] products page 7: 2951 rows OK
+13:57:09 [INFO] ===== sellers shuru =====
+13:57:09 [INFO] sellers page 1: 3095 rows OK
+13:57:09 [INFO] ===== payments shuru =====
+13:57:09 [INFO] payments page 1: 5000 rows OK
+13:57:09 [INFO] payments page 2: 5000 rows OK
+13:57:09 [INFO] payments page 3: 5000 rows OK
+13:57:09 [WARNING] 429 rate limit; 2.5s wait, attempt 1/8
+13:57:12 [INFO] payments page 4: 5000 rows OK
+13:57:12 [INFO] payments page 5: 5000 rows OK
+13:57:12 [INFO] payments page 6: 5000 rows OK
+13:57:12 [INFO] payments page 7: 5000 rows OK
+13:57:12 [WARNING] 500 server error; 1.2s wait, attempt 1/8
+13:57:14 [INFO] payments page 8: 5000 rows OK
+13:57:14 [INFO] payments page 9: 5000 rows OK
+13:57:14 [INFO] payments page 10: 5000 rows OK
+13:57:14 [INFO] payments page 11: 5000 rows OK
+13:57:14 [WARNING] 429 rate limit; 2.3s wait, attempt 1/8
+13:57:16 [INFO] payments page 12: 5000 rows OK
+13:57:17 [INFO] payments page 13: 5000 rows OK
+13:57:17 [INFO] payments page 14: 5000 rows OK
+13:57:17 [WARNING] 500 server error; 1.6s wait, attempt 1/8
+13:57:18 [INFO] payments page 15: 5000 rows OK
+13:57:19 [INFO] payments page 16: 5000 rows OK
+13:57:19 [WARNING] 500 server error; 1.8s wait, attempt 1/8
+13:57:21 [INFO] payments page 17: 5000 rows OK
+13:57:21 [INFO] payments page 18: 5000 rows OK
+13:57:21 [WARNING] 429 rate limit; 2.3s wait, attempt 1/8
+13:57:23 [INFO] payments page 19: 5000 rows OK
+13:57:23 [INFO] payments page 20: 5000 rows OK
+13:57:23 [INFO] payments page 21: 3886 rows OK
+13:59:11 [INFO] ===== orders shuru =====
+13:59:11 [INFO] ===== order_items shuru =====
+13:59:11 [INFO] ===== customers shuru =====
+13:59:11 [INFO] ===== products shuru =====
+13:59:11 [INFO] ===== sellers shuru =====
+13:59:11 [INFO] ===== payments shuru =====
+13:59:31 [INFO] ===== orders shuru =====
+13:59:31 [INFO] ===== order_items shuru =====
+13:59:31 [INFO] ===== customers shuru =====
+13:59:31 [INFO] ===== products shuru =====
+13:59:31 [INFO] ===== sellers shuru =====
+13:59:31 [INFO] ===== payments shuru =====
+13:59:42 [INFO] ===== orders shuru =====
+13:59:42 [INFO] ===== order_items shuru =====
+13:59:42 [INFO] ===== customers shuru =====
+13:59:42 [INFO] ===== products shuru =====
+13:59:42 [INFO] ===== sellers shuru =====
+13:59:42 [INFO] ===== payments shuru =====
+14:02:03 [INFO] ===== orders shuru =====
+14:02:03 [INFO] ===== order_items shuru =====
+14:02:03 [INFO] ===== customers shuru =====
+14:02:03 [INFO] ===== products shuru =====
+14:02:03 [INFO] ===== sellers shuru =====
+14:02:03 [INFO] ===== payments shuru =====
+14:09:11 [INFO] ===== orders started =====
+14:09:11 [INFO] ===== order_items started =====
+14:09:11 [INFO] ===== customers started =====
+14:09:11 [INFO] ===== products started =====
+14:09:11 [INFO] ===== sellers started =====
+14:09:11 [INFO] ===== payments started =====
+14:09:28 [INFO] ===== orders started =====
+14:09:28 [INFO] ===== order_items started =====
+14:09:28 [INFO] ===== customers started =====
+14:09:28 [INFO] ===== products started =====
+14:09:28 [INFO] ===== sellers started =====
+14:09:28 [INFO] ===== payments started =====
+12:53:56 [INFO] ===== orders started =====
+12:53:56 [INFO] ===== order_items started =====
+12:53:56 [INFO] ===== customers started =====
+12:53:56 [INFO] ===== products started =====
+12:53:56 [INFO] ===== sellers started =====
+12:53:56 [INFO] ===== payments started =====
+11:47:35 [INFO] ===== orders started =====
+11:47:35 [INFO] ===== order_items started =====
+11:47:35 [INFO] ===== customers started =====
+11:47:35 [INFO] ===== products started =====
+11:47:35 [INFO] ===== sellers started =====
+11:47:35 [INFO] ===== payments started =====

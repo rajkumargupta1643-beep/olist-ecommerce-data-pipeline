@@ -1,0 +1,340 @@
+{
+  "completed_pages": {
+    "orders|date_from=2018-07-01|page_size=5000|page=1": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:45.110709+00:00"
+    },
+    "orders|date_from=2018-07-01|page_size=5000|page=2": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:45.418690+00:00"
+    },
+    "orders|date_from=2018-07-01|page_size=5000|page=3": {
+      "rows": 2824,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:56:45.580879+00:00"
+    },
+    "order_items|date_from=2018-07-01|page_size=5000|page=1": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:45.737525+00:00"
+    },
+    "order_items|date_from=2018-07-01|page_size=5000|page=2": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:45.894432+00:00"
+    },
+    "order_items|date_from=2018-07-01|page_size=5000|page=3": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:46.066940+00:00"
+    },
+    "order_items|date_from=2018-07-01|page_size=5000|page=4": {
+      "rows": 590,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:56:46.217210+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=1": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:49.049222+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=2": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:49.195297+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=3": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:49.412216+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=4": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:49.563817+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=5": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:51.593226+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=6": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:51.778312+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=7": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:51.900098+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=8": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:52.055502+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=9": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:54.785765+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=10": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:54.951146+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=11": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:57.022823+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=12": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:57.226023+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=13": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:58.607548+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=14": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:56:58.782484+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=15": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:02.498513+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=16": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:02.726500+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=17": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:04.345888+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=18": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:04.498290+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=19": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:04.666147+00:00"
+    },
+    "customers|date_from=none|page_size=5000|page=20": {
+      "rows": 4441,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:57:04.822220+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=1": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:04.982753+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=2": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:05.210952+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=3": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:08.324506+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=4": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:08.518805+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=5": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:08.691685+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=6": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:08.865376+00:00"
+    },
+    "products|date_from=none|page_size=5000|page=7": {
+      "rows": 2951,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:57:09.028180+00:00"
+    },
+    "sellers|date_from=none|page_size=5000|page=1": {
+      "rows": 3095,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:57:09.147925+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=1": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:09.338063+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=2": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:09.448998+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=3": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:09.554439+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=4": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:12.133998+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=5": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:12.279403+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=6": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:12.447224+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=7": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:12.591486+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=8": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:13.963538+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=9": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:14.121332+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=10": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:14.261312+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=11": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:14.399720+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=12": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:16.880350+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=13": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:17.007356+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=14": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:17.163027+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=15": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:18.873912+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=16": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:19.005825+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=17": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:20.965812+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=18": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:21.137938+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=19": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:23.558833+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=20": {
+      "rows": 5000,
+      "quarantined": 0,
+      "has_next": true,
+      "ingested_at": "2026-10-20T13:57:23.766131+00:00"
+    },
+    "payments|date_from=none|page_size=5000|page=21": {
+      "rows": 3886,
+      "quarantined": 0,
+      "has_next": false,
+      "ingested_at": "2026-10-20T13:57:23.906786+00:00"
+    }
+  }
+}

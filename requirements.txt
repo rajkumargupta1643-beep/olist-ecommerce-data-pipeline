@@ -1,0 +1,5 @@
+# Packages used by the notebooks. PySpark, Jupyter and the base Python stack are
+# already provided by the jupyter/pyspark-notebook Docker image; these are listed
+# explicitly for anyone running the code outside the image.
+requests
+pandas
